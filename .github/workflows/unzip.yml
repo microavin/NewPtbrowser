@@ -1,0 +1,22 @@
+name: Unzip Project
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  unzip-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract Project ZIP
+        run: |
+          # Agar aapki zip ka naam alag hai toh yahan badal lein
+          unzip -o quetta_browser_android_project-v2.zip || true
+          rm -f quetta_browser_android_project-v2.zip
+          git config --global user.name "Auto Unzipper"
+          git config --global user.email "action@github.com"
+          git add .
+          git commit -m "Auto extracted project files" || exit 0
+          git push
+          
