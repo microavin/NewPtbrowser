@@ -1,0 +1,40 @@
+name: Android APK Build from Zip
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # Yeh step aapki zip file ko automatic extract karega
+    - name: Unzip Project Files
+      run: |
+        unzip *.zip -d extracted_project
+        mv extracted_project/*/* . 2>/dev/null || mv extracted_project/* . 2>/dev/null || true
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant Execute Permission for Gradle
+      run: chmod +x gradlew
+
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: my-android-app
+        path: app/build/outputs/apk/debug/app-debug.apk
+        
